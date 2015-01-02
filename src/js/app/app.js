@@ -1,6 +1,12 @@
 $(function () {
 	var data = JSON.parse(localStorage.data);
 
+	Highcharts.setOptions({
+		global: {
+			timezoneOffset: (new Date()).getTimezoneOffset(),
+		}
+	});
+
 	$('#graph').highcharts({
 		chart: {
 			zoomType: 'x'

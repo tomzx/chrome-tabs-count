@@ -3,13 +3,16 @@ var extension = {
 	windowCount: 0,
 	updateBadge: function() {
 		chrome.windows.getAll({ populate: true }, function(windows) {
-			var count = 0;
+			var tabCount = 0;
+			var windowCount = 0;
 			for (var w = 0; w < windows.length; w++) {
-				count += windows[w].tabs.length;
+				windowTabCount = windows[w].tabs.length;
+				tabCount += windowTabCount;
+				windowCount += windowTabCount > 0 ? 1 : 0;
 			}
-			extension.tabCount = count;
-			extension.windowCount = windows.length;
-			var text = (count === 0 ? '' : count.toString());
+			extension.tabCount = tabCount;
+			extension.windowCount = windowCount;
+			var text = tabCount === 0 ? '' : tabCount.toString();
 			chrome.browserAction.setBadgeBackgroundColor({ color: [0, 0, 0, 100] });
 			chrome.browserAction.setBadgeText({ text: text });
 			extension.recorder.record();

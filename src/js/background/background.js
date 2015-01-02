@@ -43,21 +43,35 @@ var extension = {
 		},
 	},
 	recorder: {
+		lastRecord: null,
 		init: function() {
+			var currentData = localStorage.data ? JSON.parse(localStorage.data) : [];
+			this.lastRecord = currentData ? currentData[currentData.length - 1] : null;
 			// var scheduler = later.parse.cron('*/5 * * * *');
 			// later.setInterval(extension.recorder.record, scheduler);
 		},
 		record: function() {
+
 			var data = {
-				date: new Date,
+				date: (new Date).toISOString(),
 				windowCount: extension.windowCount,
 				tabCount: extension.tabCount,
 			};
-			console.log(data);
+			// If this new record doesn't change windowCount or tabCount, then we ignore it.
+			if (this.lastRecord && this.lastRecord.windowCount === data.windowCount && this.lastRecord.tabCount === data.tabCount) {
+				return;
+			}
 
 			var currentData = localStorage.data ? JSON.parse(localStorage.data) : [];
 			currentData.push(data);
 			localStorage.data = JSON.stringify(currentData);
+
+			this.lastRecord = data;
+
+			chrome.runtime.sendMessage({
+				type: 'data.newData',
+				data: data
+			});
 		},
 	},
 	init: function() {

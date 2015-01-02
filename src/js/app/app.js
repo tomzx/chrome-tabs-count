@@ -1,3 +1,5 @@
+var series = null;
+
 $(function () {
 	var data = JSON.parse(localStorage.data);
 
@@ -9,7 +11,12 @@ $(function () {
 
 	$('#graph').highcharts({
 		chart: {
-			zoomType: 'x'
+			zoomType: 'x',
+			events: {
+				load: function() {
+					series = this.series;
+				},
+			},
 		},
 		title: {
 			text: 'Tab Count'
@@ -50,4 +57,16 @@ $(function () {
 			yAxis: 1,
 		}],
 	});
+});
+
+var addPoint = function(data) {
+	var date = Date.parse(data.date);
+	series[0].addPoint([date, data.tabCount], false); // Skip redraw
+	series[1].addPoint([date, data.windowCount], true); // Do redraw
+};
+
+chrome.runtime.onMessage.addListener(function(request, sender) {
+	if (request.type === 'data.newData') {
+		addPoint(request.data);
+	}
 });

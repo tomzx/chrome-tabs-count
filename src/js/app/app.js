@@ -53,12 +53,14 @@ $(function () {
 			enabled: false,
 		},
 		series: [{
+			index: 1,
 			name: 'Tabs',
 			data: _.map(data, function(datum) {
 				return [Date.parse(datum.date), datum.tabCount];
 			}),
 		},
 		{
+			index: 0,
 			name: 'Windows',
 			data: _.map(data, function(datum) {
 				return [Date.parse(datum.date), datum.windowCount];

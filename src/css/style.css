@@ -2,3 +2,7 @@ body.popup {
 	width: 768px;
 	height: 300px;
 }
+
+#period-picker {
+	margin-top: 15px;
+}

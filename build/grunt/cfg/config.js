@@ -18,6 +18,7 @@ module.exports = {
 		components: {
 			src: [
 				'src/js/vendor/jquery-1.11.2.js',
+				'src/js/vendor/jquery-ui.js',
 				'src/js/vendor/*.js',
 			],
 			dist : 'src/js/components.js',

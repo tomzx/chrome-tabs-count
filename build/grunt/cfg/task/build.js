@@ -52,4 +52,18 @@ module.exports = {
 			}
 		},
 	},
+
+	crx: {
+		release: {
+			src: [
+				'src/**/*',
+				'!src/js/*.map',
+				'!src/js/**/*.js',
+			],
+			dest: 'dist/crx/',
+			// options: {
+			// 	privateKey: './build/key.pem',
+			// },
+		},
+	},
 };

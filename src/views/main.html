@@ -5,6 +5,8 @@
 
 	<link rel="stylesheet" href="/css/bootstrap.css">
 	<link rel="stylesheet" href="/css/bootstrap-theme.css">
+	<link rel="stylesheet" href="/css/jquery-ui.css">
+	<link rel="stylesheet" href="/css/jquery-ui-slider-pips.css">
 	<link rel="stylesheet" href="/css/style.css">
 
 	<script src="/js/components.js"></script>
@@ -13,11 +15,11 @@
 <body class="popup">
 	<nav class="navbar navbar-default navbar-static-top" role="navigation">
 		<div class="container-fluid">
-			<a href="#" class="navbar-brand">Tabs Count</a>
+			<a href="#" class="navbar-brand">Tabs Count <small class="version text-muted"></small></a>
 			<div class="pull-right">
 				<ul class="nav navbar-nav">
-					<li><a href="#"><span class="glyphicon glyphicon-heart" title="Donate!"></span></a></li>
-					<li><a href="#"><span class="glyphicon glyphicon-cog" title="Settings"></span></a></li>
+					<li><a href="#"><span class="glyphicon glyphicon-heart" data-toggle="tooltip" data-placement="left" title="Donate!"></span></a></li>
+					<li><a href="#"><span class="glyphicon glyphicon-cog" data-toggle="tooltip"data-placement="left" title="Settings"></span></a></li>
 				</ul>
 			</div>
 		</div>
@@ -25,6 +27,8 @@
 
 	<div class="container-fluid">
 		<div id="graph" style="width: 100%; height: 100%;"></div>
+
+		<div id="period-picker"></div>
 	</div>
 </body>
 </html>

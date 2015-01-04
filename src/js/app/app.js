@@ -1,13 +1,12 @@
 var VERSION = 'v0.0.1';
 
-var series = null;
+var persistentData = JSON.parse(localStorage.data);
+var chart = null;
 
 $(function () {
 	$('[data-toggle="tooltip"]').tooltip();
 
 	$('.version').text('('+VERSION+')');
-
-	var data = JSON.parse(localStorage.data);
 
 	Highcharts.setOptions({
 		global: {
@@ -31,7 +30,11 @@ $(function () {
 		xAxis: {
 			type: 'datetime',
 			min: extremes.min,
-			max: extremes.max,
+			events: {
+				afterSetExtremes: function(event) {
+					updateChartTitle(this.chart, persistentData, event);
+				},
+			},
 		},
 		yAxis: [{
 			title: {
@@ -55,19 +58,22 @@ $(function () {
 		series: [{
 			index: 1,
 			name: 'Tabs',
-			data: _.map(data, function(datum) {
+			data: _.map(persistentData, function(datum) {
 				return [Date.parse(datum.date), datum.tabCount];
 			}),
 		},
 		{
 			index: 0,
 			name: 'Windows',
-			data: _.map(data, function(datum) {
+			data: _.map(persistentData, function(datum) {
 				return [Date.parse(datum.date), datum.windowCount];
 			}),
 			yAxis: 1,
 		}],
 	});
+	chart = $('#graph').highcharts();
+
+	updateChartTitle(chart, persistentData, extremes);
 
 	// Period picker
 	{
@@ -87,10 +93,9 @@ $(function () {
 		})
 		.on('slidechange', function(e, ui) {
 			var key = labels[ui.value];
-			var chart = $('#graph').highcharts();
 			var extremes = chartExtremes(key, chart);
 			localStorage.period = key;
-			chart.xAxis[0].setExtremes(extremes.min, extremes.max);
+			chart.xAxis[0].setExtremes(extremes.min, null);
 		});
 	}
 });
@@ -140,14 +145,39 @@ var chartExtremes = function(key, chart) {
 	}
 };
 
-var addPoint = function(data) {
-	var date = Date.parse(data.date);
-	series[0].addPoint([date, data.tabCount], false); // Skip redraw
-	series[1].addPoint([date, data.windowCount], true); // Do redraw
+var entryCountInRange = function(data, min, max) {
+	if (min === null && max === null) {
+		return data.length;
+	} else if (min === null) {
+		return _.filter(data, function(datum) {
+			return Date.parse(datum.date) <= max;
+		}).length;
+	} else if (max === null) {
+		return _.filter(data, function(datum) {
+			return Date.parse(datum.date) >= min;
+		}).length;
+	} else {
+		return _.filter(data, function(datum) {
+			var date = Date.parse(datum.date);
+			return date >= min && date <= max;
+		}).length;
+	}
+};
+
+var updateChartTitle = function(chart, data, extremes) {
+	chart.setTitle({ text: 'Tab Count ('+entryCountInRange(data, extremes.min, extremes.max)+' events)' });
+};
+
+var addPoint = function(chart, newPoint) {
+	persistentData.push(newPoint);
+	var date = Date.parse(newPoint.date);
+	chart.series[1].addPoint([date, newPoint.tabCount], false); // Skip redraw
+	chart.series[0].addPoint([date, newPoint.windowCount], true); // Do redraw
+	updateChartTitle(chart, persistentData, chart.xAxis[0].getExtremes());
 };
 
 chrome.runtime.onMessage.addListener(function(request, sender) {
 	if (request.type === 'data.newData') {
-		addPoint(request.data);
+		addPoint(chart, request.data);
 	}
 });

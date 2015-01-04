@@ -51,7 +51,6 @@ var extension = {
 			// later.setInterval(extension.recorder.record, scheduler);
 		},
 		record: function() {
-
 			var data = {
 				date: (new Date).toISOString(),
 				windowCount: extension.windowCount,

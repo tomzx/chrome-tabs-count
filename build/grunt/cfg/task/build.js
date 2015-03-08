@@ -61,9 +61,9 @@ module.exports = {
 				'!src/js/**/*.js',
 			],
 			dest: 'dist/crx/',
-			// options: {
-			// 	privateKey: './build/key.pem',
-			// },
+			options: {
+				privateKey: './build/key.pem',
+			},
 		},
 	},
 };

@@ -1,14 +1,11 @@
-Chrome Tabs Counter
-======================
+# Chrome Tabs Counter
 
 Chrome Tabs Counter is a small [Chrome](http://www.google.com/chrome/) extension to track the number of tabs and windows you have opened.
 
-Requirements
-------------
+## Requirements
 
 * [Chrome](http://www.google.com/chrome/)
 
-License
--------
+## License
 
-The code is licensed under the [MIT license](http://choosealicense.com/licenses/mit/). See license.txt.
+The code is licensed under the [MIT license](http://choosealicense.com/licenses/mit/). See LICENSE.

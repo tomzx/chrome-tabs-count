@@ -42,7 +42,8 @@ $(function () {
 				style: {
 					color: Highcharts.getOptions().colors[0]
 				}
-			}
+			},
+			min: 0,
 		}, {
 			title: {
 				text: 'Window Count',
@@ -50,7 +51,8 @@ $(function () {
 					color: Highcharts.getOptions().colors[1]
 				}
 			},
-			opposite: true
+			opposite: true,
+			min: 0,
 		}],
 		legend: {
 			enabled: false,

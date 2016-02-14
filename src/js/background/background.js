@@ -45,39 +45,69 @@ var extension = {
 	recorder: {
 		lastRecord: null,
 		init: function() {
-			var currentData = localStorage.data ? JSON.parse(localStorage.data) : [];
-			this.lastRecord = currentData ? currentData[currentData.length - 1] : null;
+			var self = this;
+			chrome.storage.local.get('data', function(storageData) {
+				storageData = storageData.data;
+				self.lastRecord = storageData ? storageData[storageData.length - 1] : null;
+			});
 			// var scheduler = later.parse.cron('*/5 * * * *');
 			// later.setInterval(extension.recorder.record, scheduler);
 		},
 		record: function() {
+			var recorder = this;
 			var data = {
 				date: (new Date).toISOString(),
 				windowCount: extension.windowCount,
 				tabCount: extension.tabCount,
 			};
 			// If this new record doesn't change windowCount or tabCount, then we ignore it.
-			if (this.lastRecord && this.lastRecord.windowCount === data.windowCount && this.lastRecord.tabCount === data.tabCount) {
+			if (recorder.lastRecord) {
+				var isSameWindowCount = recorder.lastRecord.windowCount === data.windowCount;
+				var isSameTabCount = recorder.lastRecord.tabCount === data.tabCount;
+				if (isSameWindowCount && isSameTabCount) {
+					return;
+				}
+			}
+
+			chrome.storage.local.get('data', function(storageData) {
+				storageData = storageData.data;
+				storageData.push(data);
+
+				chrome.storage.local.set({ data: storageData }, function() {
+					recorder.lastRecord = data;
+
+					chrome.runtime.sendMessage({
+						type: 'data.newData',
+						data: data
+					});
+				});
+			});
+		},
+	},
+	upgrader: {
+		run: function() {
+			var self = extension.upgrader;
+			self.upgradeFromLocalStorageToStorage();
+		},
+		upgradeFromLocalStorageToStorage: function() {
+			if ( ! localStorage.data) {
 				return;
 			}
 
-			var currentData = localStorage.data ? JSON.parse(localStorage.data) : [];
-			currentData.push(data);
-			localStorage.data = JSON.stringify(currentData);
+			console.log('Upgrading from local storage to storage');
 
-			this.lastRecord = data;
-
-			chrome.runtime.sendMessage({
-				type: 'data.newData',
-				data: data
+			chrome.storage.local.set({ data: JSON.parse(localStorage.data), period: localStorage.period }, function() {
+				delete localStorage.data;
 			});
 		},
 	},
 	init: function() {
-		extension.listen.init();
-		extension.updateBadge();
-		extension.browserActions.init();
-		extension.recorder.init();
+		var self = extension;
+		self.upgrader.run();
+		self.listen.init();
+		self.updateBadge();
+		self.browserActions.init();
+		self.recorder.init();
 	}
 };
 

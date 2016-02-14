@@ -1,105 +1,113 @@
-var VERSION = 'v0.0.1';
+var VERSION = 'v0.1.0';
 
-var persistentData = JSON.parse(localStorage.data);
+var persistentData = [];
+var period = null;
 var chart = null;
 
-$(function () {
-	$('[data-toggle="tooltip"]').tooltip();
+chrome.storage.local.get(null, function(data) {
+	persistentData = data.data;
+	period = data.period;
 
-	$('.version').text('('+VERSION+')');
+	console.log('Persistent data loaded.');
+	$(function () {
+		console.log('DOM ready.');
+		$('[data-toggle="tooltip"]').tooltip();
 
-	Highcharts.setOptions({
-		global: {
-			timezoneOffset: (new Date()).getTimezoneOffset(),
+		$('.version').text('('+VERSION+')');
+
+		Highcharts.setOptions({
+			global: {
+				timezoneOffset: (new Date()).getTimezoneOffset(),
+			}
+		});
+
+		var extremes = initialChartExtremes(getCurrentPeriod());
+		$('#graph').highcharts({
+			chart: {
+				zoomType: 'x',
+				events: {
+					load: function() {
+						series = this.series;
+					},
+				},
+			},
+			title: {
+				text: 'Tab Count'
+			},
+			xAxis: {
+				type: 'datetime',
+				min: extremes.min,
+				events: {
+					afterSetExtremes: function(event) {
+						updateChartTitle(this.chart, persistentData, event);
+					},
+				},
+			},
+			yAxis: [{
+				title: {
+					text: 'Tab Count',
+					style: {
+						color: Highcharts.getOptions().colors[0]
+					}
+				},
+				min: 0,
+			}, {
+				title: {
+					text: 'Window Count',
+					style: {
+						color: Highcharts.getOptions().colors[1]
+					}
+				},
+				opposite: true,
+				min: 0,
+			}],
+			legend: {
+				enabled: false,
+			},
+			series: [{
+				index: 1,
+				name: 'Tabs',
+				data: _.map(persistentData, function(datum) {
+					return [Date.parse(datum.date), datum.tabCount];
+				}),
+			},
+			{
+				index: 0,
+				name: 'Windows',
+				data: _.map(persistentData, function(datum) {
+					return [Date.parse(datum.date), datum.windowCount];
+				}),
+				yAxis: 1,
+			}],
+		});
+		chart = $('#graph').highcharts();
+
+		updateChartTitle(chart, persistentData, extremes);
+
+		// Period picker
+		{
+			var labels = _.keys(periods);
+
+			var activePeriod = getCurrentPeriod();
+			var activePeriodValue = _.indexOf(labels, activePeriod);
+
+			$('#period-picker').slider({
+				min: 0,
+				max: labels.length - 1,
+				value: activePeriodValue,
+			})
+			.slider('pips', {
+				rest: 'label',
+				labels: labels,
+			})
+			.on('slidechange', function(e, ui) {
+				var key = labels[ui.value];
+				var extremes = chartExtremes(key, chart);
+				chrome.storage.local.set({ period: key});
+				chart.xAxis[0].setExtremes(extremes.min, null);
+			});
 		}
 	});
-
-	var extremes = initialChartExtremes(getCurrentPeriod());
-	$('#graph').highcharts({
-		chart: {
-			zoomType: 'x',
-			events: {
-				load: function() {
-					series = this.series;
-				},
-			},
-		},
-		title: {
-			text: 'Tab Count'
-		},
-		xAxis: {
-			type: 'datetime',
-			min: extremes.min,
-			events: {
-				afterSetExtremes: function(event) {
-					updateChartTitle(this.chart, persistentData, event);
-				},
-			},
-		},
-		yAxis: [{
-			title: {
-				text: 'Tab Count',
-				style: {
-					color: Highcharts.getOptions().colors[0]
-				}
-			},
-			min: 0,
-		}, {
-			title: {
-				text: 'Window Count',
-				style: {
-					color: Highcharts.getOptions().colors[1]
-				}
-			},
-			opposite: true,
-			min: 0,
-		}],
-		legend: {
-			enabled: false,
-		},
-		series: [{
-			index: 1,
-			name: 'Tabs',
-			data: _.map(persistentData, function(datum) {
-				return [Date.parse(datum.date), datum.tabCount];
-			}),
-		},
-		{
-			index: 0,
-			name: 'Windows',
-			data: _.map(persistentData, function(datum) {
-				return [Date.parse(datum.date), datum.windowCount];
-			}),
-			yAxis: 1,
-		}],
-	});
-	chart = $('#graph').highcharts();
-
-	updateChartTitle(chart, persistentData, extremes);
-
-	// Period picker
-	{
-		var labels = _.keys(periods);
-
-		var activePeriod = getCurrentPeriod();
-		var activePeriodValue = _.indexOf(labels, activePeriod);
-
-		$('#period-picker').slider({
-			min: 0,
-			max: labels.length - 1,
-			value: activePeriodValue,
-		})
-		.slider('pips', {
-			rest: 'label',
-			labels: labels,
-		})
-		.on('slidechange', function(e, ui) {
-			var key = labels[ui.value];
-			var extremes = chartExtremes(key, chart);
-			localStorage.period = key;
-			chart.xAxis[0].setExtremes(extremes.min, null);
-		});
-	}
 });
 
 var periods = {
@@ -115,7 +123,7 @@ var periods = {
 };
 
 var getCurrentPeriod = function() {
-	return localStorage.period || 'all';
+	return period || 'all';
 };
 
 var initialChartExtremes = function(key) {

@@ -8,7 +8,7 @@ module.exports = function(grunt) {
 	grunt.log.writeln('%s - Loading external tasks...', moment().format());
 
 	require('time-grunt')(grunt);
-	require('load-grunt-tasks')(grunt);
+	require('jit-grunt')(grunt);
 
 	grunt.log.writeln('%s - done!', moment().format());
 

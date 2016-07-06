@@ -1,6 +1,6 @@
 {
   "name": "chrome-tabs-count",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A small chrome extension to display and keep track of tabs count across all windows.",
   "main": "index.js",
   "scripts": {
@@ -24,8 +24,8 @@
     "grunt-contrib-uglify": "~0.8.0",
     "grunt-contrib-watch": "~0.6.1",
     "grunt-crx": "git://github.com/oncletom/grunt-crx.git#v1.0.3",
+    "jit-grunt": "^0.10.0",
     "jshint-stylish": "~1.0.1",
-    "load-grunt-tasks": "~3.1.0",
     "lodash": "~3.4.0",
     "moment": "~2.9.0",
     "time-grunt": "~1.1.0"

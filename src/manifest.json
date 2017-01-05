@@ -3,7 +3,7 @@
 
 	"name": "Tabs Count",
 	"description": "A small chrome extension to display and keep track of tabs count across all windows.",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"author": "Tom Rochette <tom@tomrochette.com>",
 	"homepage_url": "https://github.com/tomzx/chrome-tabs-count",
 

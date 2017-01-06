@@ -1,4 +1,4 @@
-var VERSION = 'v0.2.0';
+var VERSION = 'v0.3.0';
 
 var backgroundPage = chrome.extension.getBackgroundPage();
 var persistentData = [];
@@ -51,21 +51,6 @@ backgroundPage.extension.getData(function(data) {
 						color: Highcharts.getOptions().colors[0]
 					}
 				},
-				min: 0,
-				// plotLines: [{
-				// 	id: 'plot-line-tab-count-min',
-				// 	value: null,
-				// 	dashStyle: 'shortdot',
-				// 	color: Highcharts.getOptions().colors[0],
-				// 	width: 2,
-				// },
-				// {
-				// 	id: 'plot-line-tab-count-max',
-				// 	value: null,
-				// 	dashStyle: 'shortdot',
-				// 	color: Highcharts.getOptions().colors[0],
-				// 	width: 2,
-				// }],
 			}, {
 				title: {
 					text: 'Window Count',
@@ -74,21 +59,6 @@ backgroundPage.extension.getData(function(data) {
 					}
 				},
 				opposite: true,
-				min: 0,
-				// plotLines: [{
-				// 	id: 'plot-line-window-count-min',
-				// 	value: null,
-				// 	dashStyle: 'shortdot',
-				// 	color: Highcharts.getOptions().colors[1],
-				// 	width: 2,
-				// },
-				// {
-				// 	id: 'plot-line-window-count-max',
-				// 	value: null,
-				// 	dashStyle: 'shortdot',
-				// 	color: Highcharts.getOptions().colors[1],
-				// 	width: 2,
-				// }],
 			}],
 			legend: {
 				enabled: false,
@@ -224,13 +194,6 @@ var updateChartMinMaxPlotLines = function(chart, data) {
 	var tabCountMax = _.max(tabCounts);
 	var windowCountMin = _.min(windowCounts);
 	var windowCountMax = _.max(windowCounts);
-	// console.log(tabCountMin, tabCountMax, windowCountMin, windowCountMax);
-	// chart.yAxis[0].plotLines[0].value = tabCountMin;
-	// chart.yAxis[0].plotLines[1].value = tabCountMax;
-	// chart.yAxis[0].update();
-	// chart.yAxis[1].plotLines[0].value = windowCountMin;
-	// chart.yAxis[1].plotLines[1].value = windowCountMax;
-	// chart.yAxis[1].update();
 
 	chart.yAxis[0].removePlotLine('plot-line-tab-count-min');
 	chart.yAxis[0].removePlotLine('plot-line-tab-count-max');

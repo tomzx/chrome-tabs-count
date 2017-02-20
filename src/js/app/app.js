@@ -51,6 +51,7 @@ backgroundPage.extension.getData(function(data) {
 						color: Highcharts.getOptions().colors[0]
 					}
 				},
+				softMin: 0,
 			}, {
 				title: {
 					text: 'Window Count',
@@ -58,6 +59,7 @@ backgroundPage.extension.getData(function(data) {
 						color: Highcharts.getOptions().colors[1]
 					}
 				},
+				softMin: 0,
 				opposite: true,
 			}],
 			legend: {

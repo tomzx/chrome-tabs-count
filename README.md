@@ -1,6 +1,8 @@
 # Chrome Tabs Count
 Chrome Tabs Count is a small [Chrome](http://www.google.com/chrome/) extension to track the number of tabs and windows you have opened.
 
+![Chrome Tabs Count screenshot](images/screenshot.png)
+
 ## Requirements
 * [Chrome](http://www.google.com/chrome/)
 

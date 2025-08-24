@@ -1,11 +1,10 @@
 var VERSION = 'v0.3.0';
 
-var backgroundPage = chrome.extension.getBackgroundPage();
 var persistentData = [];
 var period = null;
 var chart = null;
 
-backgroundPage.extension.getData(function(data) {
+chrome.runtime.sendMessage({type: 'getData'}, function(data) {
 	persistentData = data.data;
 	period = data.period;
 

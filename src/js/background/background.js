@@ -13,8 +13,8 @@ var extension = {
 			extension.tabCount = tabCount;
 			extension.windowCount = windowCount;
 			var text = tabCount === 0 ? '' : tabCount.toString();
-			chrome.browserAction.setBadgeBackgroundColor({ color: [0, 0, 0, 100] });
-			chrome.browserAction.setBadgeText({ text: text });
+			chrome.action.setBadgeBackgroundColor({ color: [0, 0, 0, 100] });
+			chrome.action.setBadgeText({ text: text });
 			if (callback) {
 				callback();
 			}
@@ -46,7 +46,7 @@ var extension = {
 	},
 	browserActions: {
 		init: function() {
-			chrome.browserAction.setPopup({ popup: '/views/main.html' });
+			chrome.action.setPopup({ popup: '/views/main.html' });
 		},
 	},
 	getData: function(callback) {
@@ -119,26 +119,8 @@ var extension = {
 			});
 		},
 	},
-	upgrader: {
-		run: function() {
-			var self = extension.upgrader;
-			self.upgradeFromLocalStorageToStorage();
-		},
-		upgradeFromLocalStorageToStorage: function() {
-			if ( ! localStorage.data) {
-				return;
-			}
-
-			console.log('Upgrading from local storage to storage');
-
-			chrome.storage.local.set({ data: JSON.parse(localStorage.data), period: localStorage.period }, function() {
-				delete localStorage.data;
-			});
-		},
-	},
 	init: function() {
 		var self = extension;
-		self.upgrader.run();
 		self.listen.init();
 		self.updateBadge();
 		self.browserActions.init();
@@ -146,6 +128,11 @@ var extension = {
 	}
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-	extension.init();
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+	if (request.type === 'getData') {
+		extension.getData(sendResponse);
+		return true;
+	}
 });
+
+extension.init();
